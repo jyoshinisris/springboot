@@ -2,14 +2,29 @@ package org.test.crash_course_springboot.model;
 
 public class User {
 
-    public User(Long id, String name, String email, String password, String role) {
+    public User(Long id, String name, String email, String password, String role, String username) {
         this.name = name;
         this.id = id;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.username =username;
+
     }
     private Long id;
+    private String name;
+    private String email;
+    private String password;
+    private String role;
+    private String username;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public String getName() {
         return name;
@@ -51,8 +66,6 @@ public class User {
         this.role = role;
     }
 
-    private String name;
-    private String email;
-    private String password;
-    private String role;
+
+
 }
