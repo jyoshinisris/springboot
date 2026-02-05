@@ -29,5 +29,16 @@ public class JwtUtil {
                 .signWith(getSigningKey(), Jwts.SIG.HS256)
                 .compact();
     }
+    public boolean ValidateToken(String token, UserDetails userDetails){
+        return extractUsername(token).equals(userDetails.getUsername());
+    }
 
+    public String extractUsername(String token) {
+    return Jwts.parser()
+            .verifyWith(getSigningKey())
+            .build()
+            .parseSignedClaims(token)
+            .getPayload().
+            getSubject();
+    }
 }

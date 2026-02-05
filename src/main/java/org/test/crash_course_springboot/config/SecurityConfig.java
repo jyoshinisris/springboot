@@ -11,12 +11,15 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.test.crash_course_springboot.security.JwtFilter;
 import org.test.crash_course_springboot.services.CustomUserDetailsService;
 
 import java.util.List;
@@ -25,7 +28,8 @@ import java.util.List;
 @EnableWebSecurity
 
 public class SecurityConfig {
-
+    @Autowired
+    private JwtFilter jwtFilter;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
@@ -47,8 +51,10 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 )
                 .authenticationProvider(authenticationProvider)
-                .formLogin(form -> form.permitAll())
-                .csrf(csrf -> csrf.disable());
+//                .formLogin(form -> form.permitAll())
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement( sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
