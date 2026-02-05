@@ -1,0 +1,5 @@
+spring.datasource.username=root
+spring.datasource.password=Jyo@#2006
+spring.datasource.url=jdbc:mysql://localhost:3306/spring_boot_task1
+jwt.secret=SECRET_KEY_STRING ="TtPkQOJ9p35nChV3Ggnz2UdvXFkc60i3"
+jwt.expiration=3600000
