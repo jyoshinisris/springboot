@@ -38,9 +38,9 @@ public class UserService {
     // CREATE
     public UserEntity createUser(UserEntity user) {
         String username = getCurrentUsername();
-        user.setCreatedBy(username);
+        user.setCreatedBy(user.getUsername());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setModifiedBy(username);
+        user.setModifiedBy(user.getUsername());
         return userRepo.save(user);
     }
 
