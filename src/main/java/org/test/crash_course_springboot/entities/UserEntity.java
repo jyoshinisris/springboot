@@ -15,17 +15,23 @@ public class UserEntity {
     private String password;
     private String role;
     private String username;
+    private String modifiedBy;
+    private String createdBy;
 
     public UserEntity() {
     }
 
-    public UserEntity(Long id, String name, String email, String password, String role, String username) {
+    public UserEntity(Long id, String name, String email, String password, String role, String username, String createdBy, String modifiedBy) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
         this.username=username;
+        this.createdBy = createdBy;
+        this.modifiedBy = modifiedBy;
+
+
     }
 
     public String getUsername() {
@@ -74,5 +80,21 @@ public class UserEntity {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 }
