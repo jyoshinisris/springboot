@@ -36,7 +36,7 @@ public class AuthController {
 
             log.info("Login successful for username {}", user.getUsername());
 
-            return ResponseEntity.ok(Map.of("token",token));
+            return ResponseEntity.ok(Map.of("{}",token));
 
         }catch (Exception e){
             log.error("Exception - {}",e.getMessage());

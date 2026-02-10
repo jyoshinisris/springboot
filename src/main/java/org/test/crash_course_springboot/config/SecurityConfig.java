@@ -28,23 +28,38 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
+
+//                .authorizeHttpRequests(authz -> authz
+//
+//                        // public endpoints
+//                        .requestMatchers(HttpMethod.GET, "/user").hasRole("ADMIN")
+//                        .requestMatchers("/auth/**").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/user/createstudent").permitAll()
+//
+//                        // ADMIN only: get all students
+//
+//
+//                        // other student APIs require login (USER or ADMIN)
+//                        .requestMatchers("/user/**").authenticated()
+//
+//                        // everything else
+//                        .anyRequest().permitAll()
+//                )
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess ->
                         sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authz -> authz
-
                         // public endpoints
-                        .requestMatchers(HttpMethod.GET, "/user").hasRole("ADMIN")
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user/createstudent").permitAll()
 
-                        // ADMIN only: get all students
+                        // ADMIN only endpoints
+                        .requestMatchers(HttpMethod.GET, "/user/**").hasRole("ADMIN")
 
-
-                        // other student APIs require login (USER or ADMIN)
-                        .requestMatchers("/**").authenticated()
+                        // USER or ADMIN can access other student APIs
+                        .requestMatchers("/student/**").authenticated()
 
                         // everything else
                         .anyRequest().permitAll()
