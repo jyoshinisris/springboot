@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 //import org.test.crash_course_springboot.dto.UserDto;
 import org.test.crash_course_springboot.entities.UserEntity;
 import org.test.crash_course_springboot.exceptions.ResourceNotFoundException;
+import org.test.crash_course_springboot.exceptions.UnauthorizedActionException;
 import org.test.crash_course_springboot.repo.UserRepo;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class UserService {
     }
 
     public UserEntity updateUser(Long id,UserEntity user){
+        log.info("Updating student with ID: {}",id);
         UserEntity update = userRepo.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("User not Found with this id " + id));
@@ -46,12 +48,33 @@ public class UserService {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String tokenUsername = auth.getName();
+        log.debug("Logged in username: {}",tokenUsername);
+
+        Long loggedInUserId = userRepo.findIdByUsername(tokenUsername).orElseThrow(null);
+
+        if(loggedInUserId!=null){
+            update.setModifiedBy(loggedInUserId);
+            if(!loggedInUserId.equals(update.getId())){
+                log.warn("Unauthorized update attempt by user ID: {}", loggedInUserId);
+                try {
+                    throw new UnauthorizedActionException(
+                            "Only Logged-In User can update their own profile details."
+                    );
+                } catch (UnauthorizedActionException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        log.debug("username: {}, loggedInUserId: {}", tokenUsername, loggedInUserId);
+        update.setName(user.getName());
+        update.setEmail(user.getEmail());
 
         UserEntity currentUser = userRepo.findByUsername(tokenUsername)
                 .orElseThrow(() -> new RuntimeException("Logged-in user not found"));
         update.setModifiedBy(currentUser.getId());
 
         return userRepo.save(update);
+
 
 
     }
