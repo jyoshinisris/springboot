@@ -39,7 +39,8 @@ public class AuthController {
             return ResponseEntity.ok(Map.of("token",token));
 
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error","Invalid username"));
+            log.error("Exception - {}",e.getMessage());
+            return new ResponseEntity<>(Map.of("error",e.getMessage()),HttpStatus.BAD_REQUEST);
         }
 
     }

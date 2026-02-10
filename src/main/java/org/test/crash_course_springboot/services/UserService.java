@@ -1,74 +1,78 @@
 package org.test.crash_course_springboot.services;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.test.crash_course_springboot.dto.UserDto;
 import org.test.crash_course_springboot.entities.UserEntity;
 import org.test.crash_course_springboot.exceptions.ResourceNotFoundException;
 import org.test.crash_course_springboot.repo.UserRepo;
 
 import java.util.List;
 
-
-
+@Slf4j
 @Service
 public class UserService {
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private UserRepo userRepo;
     @Autowired
-    private final UserRepo userRepo;
+    private PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepo userRepo) {
-        this.userRepo = userRepo;
+    public UserEntity createUser(UserDto userDto){
+        UserEntity user = new UserEntity();
+        user.setName(userDto.getName());
+        user.setEmail(userDto.getEmail());
+        user.setRole(userDto.getRole());
+        user.setUsername(userDto.getUsername());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        userRepo.save(user);
+        user.setCreatedBy(user.getId());
+        user.setModifiedBy(user.getId());
+        return user;
     }
 
-    private String getCurrentUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getName();
-    }
+    public UserEntity updateUser(Long id,UserEntity user){
+        UserEntity update = userRepo.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not Found with this id " + id));
 
-    // READ ALL
-    public List<UserEntity> getUsers() {
+        update.setUsername(user.getUsername());
+        update.setEmail(user.getEmail());
+        update.setPassword(passwordEncoder.encode(user.getPassword()));
+        update.setRole(user.getRole());
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String tokenUsername = auth.getName();
+
+        UserEntity currentUser = userRepo.findByUsername(tokenUsername)
+                .orElseThrow(() -> new RuntimeException("Logged-in user not found"));
+        update.setModifiedBy(currentUser.getId());
+
+        return userRepo.save(update);
+
+
+    }
+    public List<UserEntity> getAllUsers() {
         return userRepo.findAll();
     }
 
-    // CREATE
-    public UserEntity createUser(UserEntity user) {
-        String username = getCurrentUsername();
-        user.setCreatedBy(user.getUsername());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setModifiedBy(user.getUsername());
-        return userRepo.save(user);
-    }
-
-    // READ BY ID
     public UserEntity getUserById(Long id) {
         return userRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User Data Not Found at id: " + id));
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    // UPDATE
-    public UserEntity updateUser(Long id, UserEntity user) {
-        UserEntity existing = userRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
-
-        String username = getCurrentUsername();
-        existing.setName(user.getName());
-        existing.setEmail(user.getEmail());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        existing.setModifiedBy(username);
-
-        return userRepo.save(existing);
-    }
-
-    // DELETE
     public ResponseEntity<?> deleteUser(Long id) {
-        UserEntity existing = userRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User Data Not Found at id: " + id));
-        userRepo.delete(existing);
+        userRepo.deleteById(id);
         return ResponseEntity.ok().build();
     }
+    public ResponseEntity<?> deleteAllUsers() {
+        userRepo.deleteAll();
+        return ResponseEntity.ok().build();
+    }
+
+
 }
