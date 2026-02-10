@@ -7,7 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.test.crash_course_springboot.dto.UserDto;
+//import org.test.crash_course_springboot.dto.UserDto;
 import org.test.crash_course_springboot.entities.UserEntity;
 import org.test.crash_course_springboot.exceptions.ResourceNotFoundException;
 import org.test.crash_course_springboot.repo.UserRepo;
@@ -22,17 +22,16 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public UserEntity createUser(UserDto userDto){
-        UserEntity user = new UserEntity();
-        user.setName(userDto.getName());
-        user.setEmail(userDto.getEmail());
-        user.setRole(userDto.getRole());
-        user.setUsername(userDto.getUsername());
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+    public UserEntity createUser(UserEntity user){
+        user.setName(user.getName());
+        user.setEmail(user.getEmail());
+        user.setRole(user.getRole());
+        user.setUsername(user.getUsername());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepo.save(user);
         user.setCreatedBy(user.getId());
         user.setModifiedBy(user.getId());
-        return user;
+        return userRepo.save(user);
     }
 
     public UserEntity updateUser(Long id,UserEntity user){

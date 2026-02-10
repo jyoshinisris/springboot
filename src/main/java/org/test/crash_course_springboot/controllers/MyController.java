@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.test.crash_course_springboot.dto.UserDto;
+//import org.test.crash_course_springboot.dto.UserDto;
 import org.test.crash_course_springboot.entities.UserEntity;
 import org.test.crash_course_springboot.services.UserService;
 
@@ -27,7 +27,7 @@ public class MyController {
         // return  userRepository.findAll();
     }
     @PostMapping("/createstudent")
-    public  UserEntity setUser(@RequestBody UserDto user){
+    public  UserEntity setUser(@RequestBody UserEntity user){
         return userService.createUser(user);
         //return userRepository.save(user);
 
