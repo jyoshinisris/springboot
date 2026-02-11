@@ -1,5 +1,6 @@
 package org.test.crash_course_springboot.controllers;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +28,7 @@ public class MyController {
         // return  userRepository.findAll();
     }
     @PostMapping("/createstudent")
-    public  UserEntity setUser(@RequestBody UserEntity user){
+    public  UserEntity setUser(@Valid @RequestBody UserEntity user){
         return userService.createUser(user);
         //return userRepository.save(user);
 
