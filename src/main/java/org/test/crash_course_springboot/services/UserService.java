@@ -7,13 +7,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-//import org.test.crash_course_springboot.dto.UserDto;
+import org.test.crash_course_springboot.dto.UserDto;
 import org.test.crash_course_springboot.entities.UserEntity;
 import org.test.crash_course_springboot.exceptions.ResourceNotFoundException;
 import org.test.crash_course_springboot.exceptions.UnauthorizedActionException;
 import org.test.crash_course_springboot.repo.UserRepo;
-
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -23,30 +23,60 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public UserEntity createUser(UserEntity user){
-        user.setName(user.getName());
-        user.setEmail(user.getEmail());
-        user.setRole(user.getRole());
-        user.setUsername(user.getUsername());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepo.save(user);
-        user.setCreatedBy(user.getId());
-        user.setModifiedBy(user.getId());
-        return userRepo.save(user);
+    private UserEntity dtoToEntity(UserDto dto) {
+        UserEntity user = new UserEntity();
+        user.setId(dto.getId());
+        user.setUsername(dto.getUsername());
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setRole(dto.getRole());
+        user.setPassword(dto.getPassword());
+        return user;
     }
 
-    public UserEntity updateUser(Long id,UserEntity user){
-        log.info("Updating student with ID: {}",id);
-        UserEntity update = userRepo.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("User not Found with this id " + id));
+    private UserDto entityToDto(UserEntity user) {
+        UserDto dto = new UserDto();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
+        dto.setRole(user.getRole());
+        dto.setCreatedAt(user.getCreatedAt());
+        dto.setCreatedBy(user.getCreatedBy());
+        dto.setModifiedBy(user.getModifiedBy());
+        dto.setModifiedAt(user.getModifiedAt());
+        dto.setPassword(user.getPassword());
 
-        update.setUsername(user.getUsername());
-        update.setEmail(user.getEmail());
-        update.setPassword(passwordEncoder.encode(user.getPassword()));
-        update.setRole(user.getRole());
+        return dto;
+    }
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    public UserDto createUser(UserDto dto) {
+
+        UserEntity user = dtoToEntity(dto);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(user.getRole().toUpperCase());
+        UserEntity saved = userRepo.save(user);
+        saved.setCreatedBy(saved.getId());
+        saved.setModifiedBy(saved.getId());
+        saved = userRepo.save(saved);
+
+        return entityToDto(saved);
+    }
+
+public UserDto updateUser(Long id, UserDto dto) {
+    UserEntity update = userRepo.findById(id)
+            .orElseThrow(() ->
+                    new ResourceNotFoundException("User not Found with this id " + id));
+
+    update.setUsername(dto.getUsername());
+    update.setEmail(dto.getEmail());
+
+    if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
+        update.setPassword(passwordEncoder.encode(dto.getPassword()));
+    }
+
+    update.setRole(dto.getRole().toUpperCase());
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String tokenUsername = auth.getName();
         log.debug("Logged in username: {}",tokenUsername);
 
@@ -66,33 +96,36 @@ public class UserService {
             }
         }
         log.debug("username: {}, loggedInUserId: {}", tokenUsername, loggedInUserId);
-        update.setName(user.getName());
-        update.setEmail(user.getEmail());
+        update.setName(dto.getName());
+        update.setEmail(dto.getEmail());
 
-        UserEntity currentUser = userRepo.findByUsername(tokenUsername)
-                .orElseThrow(() -> new RuntimeException("Logged-in user not found"));
-        update.setModifiedBy(currentUser.getId());
+    UserEntity currentUser = userRepo.findByUsername(tokenUsername)
+            .orElseThrow(() -> new RuntimeException("Logged-in user not found"));
+    update.setModifiedBy(currentUser.getId());
 
-        return userRepo.save(update);
+    return entityToDto(userRepo.save(update));
+}
+    public List<UserDto> getAllUsers() {
 
-
-
+        return userRepo.findAll()
+                .stream()
+                .map(this::entityToDto)
+                .collect(Collectors.toList());
     }
-    public List<UserEntity> getAllUsers() {
-        return userRepo.findAll();
-    }
 
-    public UserEntity getUserById(Long id) {
-        return userRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public UserDto getUserById(Long id) {
+
+        return entityToDto(userRepo.findById(id).orElseThrow(()->new RuntimeException("User not found")));
     }
 
     public ResponseEntity<?> deleteUser(Long id) {
         userRepo.deleteById(id);
+
         return ResponseEntity.ok().build();
     }
     public ResponseEntity<?> deleteAllUsers() {
         userRepo.deleteAll();
+
         return ResponseEntity.ok().build();
     }
 

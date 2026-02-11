@@ -3,10 +3,9 @@ package org.test.crash_course_springboot.controllers;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 //import org.test.crash_course_springboot.dto.UserDto;
-import org.test.crash_course_springboot.entities.UserEntity;
+import org.test.crash_course_springboot.dto.UserDto;
 import org.test.crash_course_springboot.services.UserService;
 
 import java.util.List;
@@ -23,23 +22,23 @@ public class MyController {
     @Autowired
     private UserService userService;
     @GetMapping()
-    public List<UserEntity> getUser(){
+    public List<UserDto> getUser(){
         return userService.getAllUsers();
         // return  userRepository.findAll();
     }
     @PostMapping("/createstudent")
-    public  UserEntity setUser(@Valid @RequestBody UserEntity user){
+    public UserDto setUser(@Valid @RequestBody UserDto user){
         return userService.createUser(user);
         //return userRepository.save(user);
 
     }
     @GetMapping("/{id}")
-    public UserEntity getUserById(@PathVariable Long id) {
+    public UserDto getUserById(@PathVariable Long id) {
         //return userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("User not found with this id:"+id));
         return userService.getUserById(id);
     }
     @PutMapping("/{id}")
-    public UserEntity updateUser(@PathVariable Long id ,@RequestBody UserEntity user){
+    public UserDto updateUser(@PathVariable Long id ,@RequestBody UserDto user){
 //        UserEntity userData=userRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("User not found with this id:"+id));
 //        userData.setUserName(user.getUserName());
 //        userData.setEmail(user.getEmail());
