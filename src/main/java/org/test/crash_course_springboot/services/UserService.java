@@ -27,7 +27,7 @@ public class UserService {
         UserEntity user = new UserEntity();
         user.setId(dto.getId());
         user.setUsername(dto.getUsername());
-        user.setName(dto.getName());
+        user.setName(dto.getFirstName() + " " + dto.getLastName());
         user.setEmail(dto.getEmail());
         user.setRole(dto.getRole());
         user.setPassword(dto.getPassword());
@@ -38,7 +38,14 @@ public class UserService {
         UserDto dto = new UserDto();
         dto.setId(user.getId());
         dto.setUsername(user.getUsername());
-        dto.setName(user.getName());
+        if (user.getName() != null && user.getName().contains(" ")) {
+            String[] parts = user.getName().split(" ", 2);
+            dto.setFirstName(parts[0]);
+            dto.setLastName(parts[1]);
+        } else {
+            dto.setFirstName(user.getName());
+            dto.setLastName("");
+        }
         dto.setEmail(user.getEmail());
         dto.setRole(user.getRole());
         dto.setCreatedAt(user.getCreatedAt());
@@ -59,6 +66,7 @@ public class UserService {
         saved.setCreatedBy(saved.getId());
         saved.setModifiedBy(saved.getId());
         saved = userRepo.save(saved);
+
 
         return entityToDto(saved);
     }
@@ -96,7 +104,7 @@ public UserDto updateUser(Long id, UserDto dto) {
             }
         }
         log.debug("username: {}, loggedInUserId: {}", tokenUsername, loggedInUserId);
-        update.setName(dto.getName());
+        update.setName(dto.getFirstName()+" "+dto.getLastName());
         update.setEmail(dto.getEmail());
 
     UserEntity currentUser = userRepo.findByUsername(tokenUsername)

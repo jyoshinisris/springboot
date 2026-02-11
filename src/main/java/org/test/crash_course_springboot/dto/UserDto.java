@@ -17,17 +17,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Entity
-@Table(name = "USERS")
 //@EntityListeners(AuditingEntityListener.class)
 public class UserDto {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="name")
-    private String name;
+    @NotBlank(message = "First Name must not be empty")
+    private String firstName;
+
+    @NotBlank(message = "Last Name must not be empty")
+    private String lastName;
 
     @NotBlank(message = "Email must not be empty")
     @Email(message = "Invalid email format")
@@ -40,26 +38,16 @@ public class UserDto {
 
     @NotBlank(message = "Password must not be empty")
     @Size(min = 8, message = "Password must have at least 8 characters")
-    @Column(name="password")
     private String password;
 
-    @Column(name="role")
     private String role;
 
     @NotBlank(message ="Username must not be empty")
-    @Column(name="username")
     private String username;
 
-    @Column(name = "created_by")
     private Long createdBy;
-
-    @Column(name = "modified_by")
     private Long modifiedBy;
-
-    @Column(name = "created_at")
     private LocalDateTime createdAt;
-
-    @Column(name = "modified_at")
     private LocalDateTime modifiedAt;
 
     @PrePersist

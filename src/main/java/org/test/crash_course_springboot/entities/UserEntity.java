@@ -39,16 +39,12 @@ public class UserEntity {
     @Column(name="username")
     private String username;
 
-    @Column(name = "created_by")
     private Long createdBy;
 
-    @Column(name = "modified_by")
     private Long modifiedBy;
 
-    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "modified_at")
     private LocalDateTime modifiedAt;
 
     @PrePersist
