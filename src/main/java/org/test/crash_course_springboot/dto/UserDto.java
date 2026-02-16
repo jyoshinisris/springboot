@@ -38,6 +38,10 @@ public class UserDto {
 
     @NotBlank(message = "Password must not be empty")
     @Size(min = 8, message = "Password must have at least 8 characters")
+    @Pattern(
+            regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!*()_-]).{8,}$",
+            message = "Password must contain at least one digit, one lowercase, one uppercase, and one special character"
+    )
     private String password;
 
     private String role;
