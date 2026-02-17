@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 //import org.test.crash_course_springboot.dto.UserDto;
 import org.test.crash_course_springboot.dto.UserDto;
+import org.test.crash_course_springboot.exceptions.UnauthorizedActionException;
 import org.test.crash_course_springboot.services.UserService;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class MyController {
     @Autowired
     private UserService userService;
     @GetMapping()
-    public List<UserDto> getUser(){
+    public List<UserDto> getUser() throws UnauthorizedActionException {
         return userService.getAllUsers();
         // return  userRepository.findAll();
     }
@@ -33,12 +34,12 @@ public class MyController {
 
     }
     @GetMapping("/{id}")
-    public UserDto getUserById(@PathVariable Long id) {
+    public UserDto getUserById(@PathVariable Long id) throws UnauthorizedActionException {
         //return userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("User not found with this id:"+id));
         return userService.getUserById(id);
     }
     @PutMapping("/{id}")
-    public UserDto updateUser(@PathVariable Long id ,@RequestBody UserDto user){
+    public UserDto updateUser(@PathVariable Long id ,@RequestBody UserDto user) throws UnauthorizedActionException {
 //        UserEntity userData=userRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("User not found with this id:"+id));
 //        userData.setUserName(user.getUserName());
 //        userData.setEmail(user.getEmail());

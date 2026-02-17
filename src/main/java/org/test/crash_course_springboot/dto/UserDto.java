@@ -51,17 +51,5 @@ public class UserDto {
 
     private Long createdBy;
     private Long modifiedBy;
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        modifiedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        modifiedAt = LocalDateTime.now();
-    }
 }

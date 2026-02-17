@@ -55,9 +55,6 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user/createstudent").permitAll()
 
-                        // ADMIN only endpoints
-                        .requestMatchers(HttpMethod.GET, "/user/**").hasRole("ADMIN")
-
                         // USER or ADMIN can access other student APIs
                         .requestMatchers("/student/**").authenticated()
 
